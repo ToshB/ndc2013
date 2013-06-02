@@ -76,18 +76,7 @@ You do **not** want to block the loading of the hosting page.
 
 * Must load fast
 * Preferably non-blocking
-* ..
 * Must still support updates
-</script></section>
-
-<section data-markdown><script type="text/template">
-## Variants of includes
-
-* Plain JavaScript include
-* Async script
-* Plain loader
-* Async loader
-
 </script></section>
 
 <section data-markdown><script type="text/template">
@@ -108,8 +97,69 @@ You do **not** want to block the loading of the hosting page.
 * Allows for aggressive cache of main script
     * Don't cache loader
     * Cache main script forever
+
+<br>
+<a href="http://localhost:3000/loader">Example</a>
+
+<div class="fragment">
+<br>
+<p>Still a problem if server is non-responsive.</p>
+<a href="http://localhost:3000/slowLoader">Example</a>
+</div>
+
+</script></section>
+
+<section data-markdown><script type="text/template">
+## Why does script loading block anyway?
+
+<code>document.write</code>
+
+<br>
+
+* Can add new HTML
+* Can add CSS
+* Can add additional JavaScript
+</script></section>
+
+<section data-markdown><script type="text/template">
+## Introducing <code>async</code>
+
+* No <code>document.write</code>
+* Load asynchronously
+* Run as soon as possible
+<li class="fragment">
+    Not supported everywhere :(
+</li>
+<li class="fragment">
+    Default* behavior when dynamically inserting! :D
+</li>
+</script></section>
+
+<section data-markdown><script type="text/template">
+## Async loader script
+```javascript
+(function (){
+    var script = document.createElement('script'),
+        s = document.getElementsByTagName('script')[0];
+
+    script.src = 'http://tosh.no/script.js';
+    script.async = true;
+
+    s.parentNode.insertBefore(script, s);
+})();
+```
+
+<small>async attribute needed in some browsers</small>
+</script></section>
+
+<section data-markdown><script type="text/template">
+## Async loader script (cont'd)
+
+* Is equivalent to <code>async</code> script for all browsers
+* Does not block anything
+* Executes as soon as loaded
 <br><br>
-Still a problem if server is non-responsive.
+<a href="http://localhost:3000/asyncLoader">Example</a>
 
 </script></section>
 
@@ -149,6 +199,61 @@ Same as mentioned earlier, only without the hassle of DOM Manipulation
 * SOP - Same-Origin Policy
 * EasyXDM
 * IE Security Zones
+</script></section>
+
+<section data-markdown><script type="text/template">
+## Same Origin Policy
+
+Browser mechanism to prevent pages XmlHttpRequests to different sites using the user's credentials.
+<br>
+<br>
+
+* Same protocol (http/https)
+* Same host (including subdomain)
+* Same port
+
+<br>
+Note that <code>&lt;script&gt;</code> tags are exempt.
+</script></section>
+
+<section data-markdown><script type="text/template">
+## Cross Origin Resource Sharing
+
+* For allowing CORS
+* Varying implementations
+* Very hackish
+* Internet security zones
+
+</script></section>
+
+<section data-markdown><script type="text/template">
+## JSON with Padding (JSONP)
+
+* SOP workaround
+* Loads data through script tags
+* Good library support
+* Only GET
+
+</script></section>
+
+<section data-markdown><script type="text/template">
+## iframe Messaging
+
+* iframes are tunnels to another server
+* Supports simple* messaging
+* Very varying implementations
+
+<br>
+<small>&#42; basic-simple, **not** easy-simple</small>
+</script></section>
+
+<section data-markdown><script type="text/template">
+## Suggestions
+
+* Consider CORS
+* Use JSONP if only GETting data
+* iframe messaging works
+    * Take a look at <a href="http://easyxdm.net">easyXDM</a>
 </script></section>
 
 <section data-markdown><script type="text/template">
