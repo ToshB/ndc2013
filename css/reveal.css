@@ -1332,6 +1332,7 @@ body {
  *********************************************/
 
 .reveal aside.notes {
+outline: 1px solid red;
 	/*display: none;*/
 }
 
