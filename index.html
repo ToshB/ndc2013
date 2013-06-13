@@ -36,8 +36,11 @@
 <div class="reveal"><div class="slides">
 
 <section data-markdown><script type="text/template">
-# Third party JavaScript
+# Third Party JavaScript
 with Torstein Bjørnstad
+<aside class="notes">
+    Building third-party widgets and apis using JavaScript
+</aside>
 </script></section>
 
 <section data-markdown><script type="text/template">
@@ -47,69 +50,99 @@ with Torstein Bjørnstad
 
 Torstein Bjørnstad
 
-.NET.. Web Developer at Webstep
+.NET Consultant at Webstep
+
+Web Developer
 
 [@toshb](https://twitter.com/toshb) | [github.com/toshb](https://github.com/toshb) | [tosh.no](http://tosh.no)
 
 <aside class="notes">
-    1985, 3 yrs, .NET stack, web pages, javascript
+    1985, 3 yrs, blue shirt, .NET stack, web pages, javascript
 </aside>
 </script></section>
 
 <section data-markdown><script type="text/template">
-# Third Party JS
+### I think I know JavaScript, but..
+# third party?
 
-* Third Party
-* Widgets
-* APIs
-
+![Photo of party](img/party.jpg)
 <aside class="notes">
-    Consumer (reader), Provider (serving), 3rd party.
-    Typical Facebook, Twitter, Disqus.<br>
+    Consumer (reader) <br>
+    Provider (serving), easy to write scripts <br>
+    3rd party, know nothing about the page <br>
+    Widgets like Facebook, Twitter, Disqus.<br>
     Google Analytics is typical API.
 </aside>
 </script></section>
 
 <section data-markdown><script type="text/template">
-# This talk
-
-* Loading Scripts
-* Displaying Stuff
-* Loading Data
-
+![Facebook Widget](img/facebookwidget.png)
 <aside class="notes">
-    Consumer (reader), Provider (serving), 3rd party.
-    Typical Facebook, Twitter, Disqus.
+    Facebook Widget
 </aside>
 </script></section>
 
 <section data-markdown><script type="text/template">
-# Loading Scripts
-![One does not simply load jQuery](img/loadjquery.jpg)
+![Disqus Widget](img/disquswidget.png)
+<aside class="notes">
+    Disqus widget
+</aside>
+</script></section>
 
+<section>
+    <a class="twitter-timeline" href="https://twitter.com/search?q=%23ndcoslo" data-widget-id="345219492869181441">Tweets about "#ndcoslo"</a>
+    <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+    <aside class="notes">
+        Twitter widget
+        mention Google ANalytics as API
+    </aside>
+</section>
+
+<section data-markdown><script type="text/template">
+# This talk
+
+![Plan for this talk](img/plan.png)
+
+<aside class="notes">
+Three main sections. <br>
+Loading <br>
+Modifying the DOM <br>
+Security Constraints when loading data <br>
+</aside>
+</script></section>
+<section></section>
+<section data-markdown><script type="text/template">
+# Loading Scripts
 </script></section>
 
 <section data-markdown><script type="text/template">
-## Requirements
-
-* Don't conflict with original JS
-* Don't affect page load times
+## Don't break the page
 
 <aside class="notes">
-    Is jquery loaded? What version? Plugins? Modifications?<br>
-    What happens if you're overloaded? If one "client" posts news about Justin Bieber?
+    This is important
+</aside>
+</script></section>
+
+<section data-markdown><script type="text/template">
+# Do not break the page
+
+<aside class="notes">
+    Whatever you do, do not break the page. Be careful when loading stuff. <br>
+    How will new scripts interact with unknown environments <br>
+    Don't do alerts.
 </aside>
 </script></section>
 
 <section data-markdown><script type="text/template">
 ## Avoiding Conflicts with other scripts
-
-* Keep globals to a minimum
-* Use closures and IIFE's
-* Hide scripts, use noConflict()
-* Wrap scripts, use RequireJS
+<ul>
+  <li class="fragment">Keep globals to a minimum</li>
+  <li class="fragment">Hide scripts, use noConflict()</li>
+  <li class="fragment">Wrap scripts, use RequireJS</li>
+</ul>
 <aside class="notes">
     Globals, preferably none. No more than one.<br>
+    If you are creating an API, you typically need one. <br>
     Closures and Immediately Invoked Function Expressions<br>
     NoConflict, keep reference.<br>
     Namespaced requirejs, jquery backbone underscore noconflict<br>
@@ -117,99 +150,127 @@ Torstein Bjørnstad
 </script></section>
 
 <section data-markdown><script type="text/template">
-## Not affecting load times
-
-You do **not** want to block the loading of the hosting page.
-
-* Must load fast
-* Preferably non-blocking
-<li class="fragment">
-    Still want to be able to update script..
-</li>
+![One does not simply load jQuery](img/loadjquery.jpg)
 
 <aside class="notes">
-    Fast, or at least must load.<br>
-    The page should keep loading<br>
-    Might consider caching, but.. - click -
+    Is jquery loaded? What version? Plugins? Modifications?<br>
 </aside>
 </script></section>
 
+<section data-markdown><script type="text/template">
+## Don't affect page load times
+
+<aside class="notes">
+    What happens if you're overloaded? <br>
+    Or if your server goes down? <br>
+    What happens when you deploy? App pool recycling?
+
+    The page should keep loading<br>
+</aside>
+</script></section>
+<section>
+    <a href="http://localhost:3000/original" target="_blank">Example</a>
+    <aside class="notes">
+    Introduce example<br>
+    And the goal. Get a counter at the bottom.<br>
+    Notice images are grayed out <br>
+    Show code.<br>
+    Click.
+    </aside>
+</section>
 <section data-markdown><script type="text/template">
 ## Regular JavaScript Include
-
-* The easiest of all, think jQuery.
-* Might block page, depending on placement.
-* Will block DOM Ready
-* Can't cache much, to support changes
+<code>
+&lt;script src="script.js"&gt;&lt;/script&gt;
+</code>
 
 <br>
-<a href="http://localhost:3000/sync">Example</a>
+<a class="fragment" href="http://localhost:3000/sync" target="_blank">Example</a>
 <aside class="notes">
-    At least place on bottom, so content is loaded. Will postpone document ready.<br>
-    Could cache for a while, but it makes updates a pain<br>
-    Alternatives, the simplest. Explain example. Show example.
+    The easiest of all, think jQuery.<br>
+    Will block, but placement will help.<br>
+    At least place on bottom, so content is loaded. Will still postpone document ready.<br>
+    After a while and you have added a bunch of additional frameworks and jquery, it's getting slow. <br>
+    If the script is big or server slow, we can't solve by caching..<br>
 </aside>
 </script></section>
 
 <section data-markdown><script type="text/template">
-## Loader Script
+## Enabling caching with loaders
+<code>
+    &lt;script src="loader.js"&gt;&lt;/script&gt;
+</code>
 
-* Supports more complex loading (multiple files)
-* Allows for aggressive cache of main script
-    * Don't cache loader
-    * Cache main script forever
+![Simple loader illustration](img/simpleLoader.png)
 
-<br>
-<a href="http://localhost:3000/loader">Example</a>
+<a href="http://localhost:3000/loader" target="_blank">Example</a>
 
-<div class="fragment">
-<br>
-<p>Still a problem if server is non-responsive.</p>
-<a href="http://localhost:3000/slowLoader">Example</a>
-</div>
 <aside class="notes">
-    Quite nice, serve the loader FAST (no caching). <br>
-    Now we can cache the big chunk of data forever<br>
-    Show example.<br>
-    But what if the server won't serve the loader? Same problem..
+    Have a FAST loader<br>
+    Loader not cached in the client.<br>
+    Refer to script with version<br>
+    Versioned URL <br>
+    Supports aggressive caching (1 yr)of the main script<br>
+    Supports more complex loading scenarios (multiple files)<br>
+    Show Example <br>
+</aside>
+</script></section>
+
+<section data-markdown><script type="text/template">
+loader.js
+```javascript
+var script = document.createElement('script'),
+s = document.getElementsByTagName('script')[0];
+
+script.src = 'http://example.com/script.v15.js';
+script.async = true;
+
+s.parentNode.insertBefore(script, s);
+```
+</script></section>
+
+<section data-markdown><script type="text/template">
+Still a problem if server with loader is non-responsive.</p>
+<a href="http://localhost:3000/slowLoader" target="_blank">Example</a>
+
+<aside class="notes">
+But what if the server with loader is slow or non-responsive?<br>
+Same problem..
 </aside>
 </script></section>
 
 <section data-markdown><script type="text/template">
 ## Why does script loading block anyway?
 
-<code>document.write</code>
-<br>
+<div class="fragment">
+<code>
+    document.write()
+</code>
+</div>
 
-* Can add new HTML
-* Can add CSS
-* Can add additional JavaScript
+
+<span id="docwritetext"></span>
 
 <aside class="notes">
-    JavaScript can modify DOM, document write.<br>
-    Might add things that modify the page, even JavaScript.<br>
-    Browsers cheat a bit in order to load faster, so not entirely blocking.
+    Should not be blocking, but why does it block anyway?<br>
+    Didn't add anything, but it could have.<br>
+    Might add things that modify the page, html, css even JavaScript.<br>
+    Every script tag that might contain DW must block.
+    Even though you don't use it, the browser can't know that<br>
 </aside>
 </script></section>
 
 <section data-markdown><script type="text/template">
 ## Introducing <code>async</code>
-
-* No <code>document.write</code>
-* Load asynchronously
-* Run as soon as possible
-<li class="fragment">
-    Not supported everywhere :(
-</li>
-<li class="fragment">
-    Default* behavior when dynamically inserting! :D
-</li>
-</ul>
+<code>
+    &lt;script async src="script.js"&gt;&lt;/script&gt;
+</code>
 <aside class="notes">
-    DEFER in HTML4, async but kept loading order<br>
+    Declare that you won't use document.write.<br>
     ASYNC in HTML5, loads async and runs immediately<br>
     doc.write is ignored <br>
-    Came with HTML5, to improve on defer
+    Came with HTML5, to improve on defer<br>
+    Unfortunately not supported everywhere... but!
 </aside>
 </script></section>
 
@@ -220,81 +281,90 @@ You do **not** want to block the loading of the hosting page.
     var script = document.createElement('script'),
         s = document.getElementsByTagName('script')[0];
 
-    script.src = 'http://tosh.no/script.js';
+    script.src = 'http://example.com/loader.js';
     script.async = true;
 
     s.parentNode.insertBefore(script, s);
 })();
 ```
-
 <small>async attribute needed in some browsers</small>
+
+<a href="http://localhost:3000/asyncLoader" target="_blank">Example</a>
+
 <aside class="notes">
+    Instead of script tag for loader, have this block. Like Google Analytics.<br>
     Example of IIFE, adding a new script tag to page<br>
-    async needed for some browsers
+    async needed for some browsers<br>
+    Equivalent to script async for all browsers, doesnt block and executes as soon as loaded. <br>
+    Do this!
 </aside>
 </script></section>
+
 
 <section data-markdown><script type="text/template">
-## Async loader script (cont'd)
-
-* Is equivalent to <code>&lt;script async&gt;</code> for all browsers
-* Does not block anything
-* Executes as soon as loaded
-<br><br>
-<a href="http://localhost:3000/asyncLoader">Example</a>
+## Do loading right early
 <aside class="notes">
-Notice how the code functions as expected<br>
-Before the script is finally run.
+Very hard to change later
 </aside>
+
 </script></section>
+
 
 <section data-markdown><script type="text/template">
 # Displaying Stuff
-
 </script></section>
 
 <section data-markdown><script type="text/template">
-## Requirements
+## Don't mess up the page
+<aside class="notes">
+    Should not change the styling of the page.<br>
+</aside>
+</script></section>
 
-* Don't affect the page visually
-* Don't be affected by existing styles (opt)
+<section data-markdown><script type="text/template">
+## Don't mess up the page
+
+* Keep elements contained inside one id/class
+* Carefully scoped CSS
+* [LESS](http://lesscss.org)/[SASS](http://sass-lang.com/)
+* Dynamic CSS Loading
+
+<aside class="notes">
+    Scope styles inside your own namespace<br>
+    LESS/SASS Nesting <br>
+    Explicitly style your elements to override other styles. Can't reset (yet)<br>
+    Handle cases where styling breaks<br>
+    Consider iframes, coming soon
+</aside>
+</script></section>
+
+<section data-markdown><script type="text/template">
+## Optional: Don't be affected by styling
+
 <aside class="notes">
 The optional requirement is for brands.<br>
 Facebook widgets branded. You can't fake the like-link.
 </aside>
 </script></section>
 
-<section data-markdown><script type="text/template">
-## Not affecting the page
-
-* Carefully scoped CSS
-    * [LESS](http://lesscss.org)/[SASS](http://sass-lang.com/)
-    * Dynamic CSS Loading
-
-* Keep elements contained inside one id/class
-<aside class="notes">
-    Scope styles inside your own namespace<br>
-    Explicitly style your elements to override other styles. Can't reset (yet)<br>
-    Handle cases where styling breaks<br>
-    Consider iframes, next slide
-</aside>
-</script></section>
 
 <section data-markdown><script type="text/template">
 ## Source-less iframes
-
-* Sandbox inside the DOM
-* No styles leak out
-* Dynamic CSS Loading
+<ul>
+    <li class="fragment">Sandbox for styles</li>
+    <li class="fragment">Not for security</li>
+</ul>
 
 <aside class="notes">
-CSS is kept out and in,
+Sandbox inside the DOM, click<br>
+No styles leak out, no styles leak in<br>
+Can communicate in and out, click <br>
 Basically an iframe without src. Get reference to, and modify.
 </aside>
 </script></section>
 
 <section data-markdown><script type="text/template">
-## Source-less iframes (cont.d)
+## Source-less iframe
 
 ```javascript
 var iframe = document.createElement('iframe');
@@ -304,104 +374,108 @@ iframe.style.border = 'none';
 target.parentNode.insertBefore(iframe, target);
 
 var iframeDoc = iframe.contentWindow.document;
-doc.write('iframe content html goes here');
-doc.close();
+iframeDoc.write('<div>iframe content html goes here</div>');
+iframeDoc.close();
 ```
 
 <aside class="notes">
-    Create frame, style it, add it.<br>
-    After adding, get contentWindow and write to it.<br>
-    Here you can add style tags, script tags whatnot.<br>
-    And you can communicate back and forth. So can the page!
+Create frame, style it, add it.<br>
+After adding, get contentWindow and write to it.<br>
+Here you can add style tags, script tags whatnot.<br>
+And you can communicate back and forth. So can the page!
 </aside>
 </script></section>
 
 <section data-markdown><script type="text/template">
-## Normal iframes
+## Normal iframe
 
-* Full separation
-* More secure
-<br>
-<br>
-Might be a better choice, if possible.
+<code>
+    &lt;iframe src="page.html"&gt;&lt;/iframe&gt;
+</code>
 
 <aside class="notes">
+These give you full separation between the page and your widget<br>
 Rendering handled by your webserver, not your script.<br>
-Security enforced by SOP. You or page can't touch.
+Security enforced by SOP. You or page can't touch. <br>
+Might be a better choice, unless you have to talk a lot to the page<br>
+</aside>
+</script></section>
+
+
+<section data-markdown><script type="text/template">
+## Case: Interactive Widgets
+
+![Assessment Engine](img/aEngine.png)
+
+<aside class="notes">
+Widget for creating multiple-choice tests. Dynamic, interactive, many styles, inherit styles, Styling was hard.<br>
+This would probably be better as source less iframe, passing in some styles.
 </aside>
 </script></section>
 
 <section data-markdown><script type="text/template">
-## Considerations
+## Case: Embedding static content
+
+<iframe width="800" height="600" src="http://www.youtube.com/embed/9bZkp7q19f0" frameborder="0" allowfullscreen></iframe>
+
+<aside class="notes">
+    Iframes are good here.<br>
+    Consider communication pattern. Lots of inpage vs server. Cross-domain issues.
+</aside>
+</script></section>
+
+<section data-markdown><script type="text/template">
+## Some points
 
 * iframes are the easiest
 * Rendering outside the frame?
 * Performance
 * Look and feel
+* Security
 
 <aside class="notes">
-Rendering outside the frame, tooltips? Can be solved..<br>
-Iframes, especially multiple, can be slow compared to elements.<br>
-Inheriting styles is possible, but harder.
+    Rendering outside the frame, tooltips? Can be solved by rendering to the page..<br>
+    Iframes, especially multiple, can be slow compared to elements.<br>
+    Inheriting styles in iframes is possible, but harder.<br>
+    Normal iframes are more secure due to SOP.
 </aside>
 </script></section>
-
-<section data-markdown><script type="text/template">
-## My Experience
-
-* Inline widget for editing questions
-    * Interactive
-    * Some basic styling
-    * Inherited styling
-    * Render inline or src-less iframe
-* Displaying static content in-site
-    * Go for iframes if fairly static
-    * Consider src-less if you need in-page communication
-
-<aside class="notes">
-Widget for creating multiple-choice tests. Inherit styles, Styling was hard.<br>
-Widget for displaying static content from server<br>
-Src-less iframes were hard to get working everywhere. Cross-domain issues.<br>
-</aside>
-</script></section>
-
 
 
 <section data-markdown><script type="text/template">
 # Security Constraints
-
-* SOP - Same-Origin Policy
-* EasyXDM
-* IE Security Zones
 <aside class="notes">
+Cookies for auth, has to prevent.
 </aside>
 </script></section>
 
 <section data-markdown><script type="text/template">
 ## Same Origin Policy
 
-Browser mechanism to prevent pages XmlHttpRequests to different sites using the user's credentials.
+Browser mechanism to prevent XmlHttpRequests to different sites using the user's credentials.
 <br>
 <br>
+<ul>
+    <li class="fragment">Same protocol as page (http/https)</li>
+    <li class="fragment">Same host as page (including subdomain)</li>
+    <li class="fragment">Same port as page</li>
+</ul>
 
-* Same protocol (http/https)
-* Same host (including subdomain)
-* Same port
+<br><br>
 
-<br>
-Note that <code>&lt;script&gt;</code> tags are exempt.
+<p class="fragment">Note that <code>&lt;script&gt;</code> tags are exempt.</p>
+
 <aside class="notes">
+You can still load scripts, like we do from CDNs all the time.
 </aside>
 </script></section>
 
 <section data-markdown><script type="text/template">
 ## Cross Origin Resource Sharing
-
-* For allowing CORS
-* Varying implementations
-* Very hackish
-* Internet security zones
 <aside class="notes">
+For allowing requests across different origins (protocols, hosts, ports).
+Preflight OPTIONS request, Methods and headers.
+Variying implementations, feels hackish.
 </aside>
 </script></section>
 
@@ -414,16 +488,24 @@ Note the limitations in IE. GET/POST only, No custom headers: Auth hard.
 </script></section>
 
 <section data-markdown><script type="text/template">
+![IE Security Zones](img/iezones.jpg)
+<aside class="notes">
+Also, beware of Internet Explorer Security Zones.<br>
+Can only make requests to same or lower ranked zones. <br>
+Page on intranet can get data from internet, not the other way around.
+</aside>
+</script></section>
+
+
+<section data-markdown><script type="text/template">
 ## JSON with Padding (JSONP)
 
-* SOP workaround
-* Loads data through script tags
-* Good library support
-* Only GET
-
+<p class="fragment">Only GET</p>
 <aside class="notes">
-Just works everywhere. <br>
-jQuery supports well
+Is a quite good workaround for SOP. <br>
+Loads data through script tags<br>
+Only GET though <br>
+Just works everywhere.
 </aside>
 </script></section>
 
@@ -446,14 +528,16 @@ jQuery autogenerates callbacks.
 <section data-markdown><script type="text/template">
 ## iframe Messaging
 
-* iframes are tunnels to another server
-* Supports simple* messaging
-* Very varying implementations
-
-<br>
-<small>&#42; basic-simple, **not** easy-simple</small>
+<div class="fragment">
+    <p>Supports simple&#42; messaging</p>
+    <small>&#42; basic-simple, **not** easy-simple</small>
+</div>
 
 <aside class="notes">
+iframes are tunnels to another server <br>
+Can communicate freely with server <br>
+You can communicate with the iframe <br>
+If you get it working, it works well!
 </aside>
 </script></section>
 
@@ -466,7 +550,8 @@ jQuery autogenerates callbacks.
     * Take a look at <a href="http://easyxdm.net">easyXDM</a>
 
 <aside class="notes">
-Consider CORS first, as it is a standard. Pay attention to limitations with authorization and cookeis
+Consider CORS first, as it is a standard. Pay attention to limitations with authorization and cookies <br>
+JSONP is very easy to get working, beware of passing user data as anyone can include the script<br>
 </aside>
 </script></section>
 
@@ -510,7 +595,7 @@ Same as mentioned earlier, only without the hassle of DOM.
         center: true,
 
         theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
-        transition: 'default', // default/cube/page/concave/zoom/linear/fade/none
+        transition: 'zoom', // default/cube/page/concave/zoom/linear/fade/none
 
         // Optional libraries used to extend on reveal.js
         dependencies: [
