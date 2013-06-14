@@ -36,7 +36,9 @@
 <div class="reveal"><div class="slides">
 
 <section data-markdown><script type="text/template">
-# Third Party JavaScript
+### Building Widgets and APIs Using
+# Third Party
+# JavaScript
 with Torstein Bjørnstad
 <aside class="notes">
     Building third-party widgets and apis using JavaScript
@@ -57,7 +59,7 @@ Web Developer
 [@toshb](https://twitter.com/toshb) | [github.com/toshb](https://github.com/toshb) | [tosh.no](http://tosh.no)
 
 <aside class="notes">
-    1985, 3 yrs, blue shirt, .NET stack, web pages, javascript
+    1985, 3 yrs, blue shirt, web pages, javascript
 </aside>
 </script></section>
 
@@ -70,15 +72,16 @@ Web Developer
     Consumer (reader) <br>
     Provider (serving), easy to write scripts <br>
     3rd party, know nothing about the page <br>
+    Loaded from a different server, updated independently of the page <br>
     Widgets like Facebook, Twitter, Disqus.<br>
     Google Analytics is typical API.
 </aside>
 </script></section>
 
 <section data-markdown><script type="text/template">
-![Facebook Widget](img/facebookwidget.png)
+![Facebook Widgets](img/facebookwidget.png)
 <aside class="notes">
-    Facebook Widget
+    Facebook Widget. Uses existing session on Facebook.
 </aside>
 </script></section>
 
@@ -107,7 +110,7 @@ Web Developer
 Three main sections. <br>
 Loading <br>
 Modifying the DOM <br>
-Security Constraints when loading data <br>
+Loading Data and Security<br>
 </aside>
 </script></section>
 <section></section>
@@ -134,11 +137,20 @@ Security Constraints when loading data <br>
 </script></section>
 
 <section data-markdown><script type="text/template">
+    ![One does not simply load jQuery](img/loadjquery.jpg)
+
+    <aside class="notes">
+        Is jquery loaded? What version? Plugins? Modifications?<br>
+    </aside>
+</script></section>
+
+<section data-markdown><script type="text/template">
 ## Avoiding Conflicts with other scripts
 <ul>
   <li class="fragment">Keep globals to a minimum</li>
   <li class="fragment">Hide scripts, use noConflict()</li>
   <li class="fragment">Wrap scripts, use RequireJS</li>
+  <li class="fragment">Scope RequireJS</li>
 </ul>
 <aside class="notes">
     Globals, preferably none. No more than one.<br>
@@ -146,14 +158,7 @@ Security Constraints when loading data <br>
     Closures and Immediately Invoked Function Expressions<br>
     NoConflict, keep reference.<br>
     Namespaced requirejs, jquery backbone underscore noconflict<br>
-</aside>
-</script></section>
-
-<section data-markdown><script type="text/template">
-![One does not simply load jQuery](img/loadjquery.jpg)
-
-<aside class="notes">
-    Is jquery loaded? What version? Plugins? Modifications?<br>
+    Remember that RequireJS can also conflict
 </aside>
 </script></section>
 
@@ -161,8 +166,9 @@ Security Constraints when loading data <br>
 ## Don't affect page load times
 
 <aside class="notes">
+    Server going down might not be the worst <br>
     What happens if you're overloaded? <br>
-    Or if your server goes down? <br>
+    Are scripts big and taking a long time to load? <br>
     What happens when you deploy? App pool recycling?
 
     The page should keep loading<br>
@@ -191,6 +197,8 @@ Security Constraints when loading data <br>
     Will block, but placement will help.<br>
     At least place on bottom, so content is loaded. Will still postpone document ready.<br>
     After a while and you have added a bunch of additional frameworks and jquery, it's getting slow. <br>
+    Show demo <br>
+    Caching? <br>
     If the script is big or server slow, we can't solve by caching..<br>
 </aside>
 </script></section>
@@ -219,14 +227,20 @@ Security Constraints when loading data <br>
 <section data-markdown><script type="text/template">
 loader.js
 ```javascript
-var script = document.createElement('script'),
-s = document.getElementsByTagName('script')[0];
+(function (){
+    var script = document.createElement('script'),
+        s = document.getElementsByTagName('script')[0];
 
-script.src = 'http://example.com/script.v15.js';
-script.async = true;
+    script.src = 'http://example.com/script.v15.js';
+    script.async = true;
 
-s.parentNode.insertBefore(script, s);
+    s.parentNode.insertBefore(script, s);
+})();
 ```
+<aside class="notes">
+    Immediately Invoked Function Expression
+</aside>
+
 </script></section>
 
 <section data-markdown><script type="text/template">
@@ -248,10 +262,8 @@ Same problem..
 </code>
 </div>
 
-
-<span id="docwritetext"></span>
-
 <aside class="notes">
+Writes to current location in the dom <br>
     Should not be blocking, but why does it block anyway?<br>
     Didn't add anything, but it could have.<br>
     Might add things that modify the page, html, css even JavaScript.<br>
@@ -267,6 +279,7 @@ Same problem..
 </code>
 <aside class="notes">
     Declare that you won't use document.write.<br>
+    DEFER in HTML5 <br>
     ASYNC in HTML5, loads async and runs immediately<br>
     doc.write is ignored <br>
     Came with HTML5, to improve on defer<br>
@@ -308,10 +321,13 @@ Very hard to change later
 </aside>
 
 </script></section>
-
+<section></section>
 
 <section data-markdown><script type="text/template">
 # Displaying Stuff
+<aside class="notes">
+    Just modify the DOM like you would normally do with jQuery.
+</aside>
 </script></section>
 
 <section data-markdown><script type="text/template">
@@ -324,12 +340,15 @@ Very hard to change later
 <section data-markdown><script type="text/template">
 ## Don't mess up the page
 
-* Keep elements contained inside one id/class
+* Dynamic CSS Loading
+* Keep elements contained inside one element
 * Carefully scoped CSS
 * [LESS](http://lesscss.org)/[SASS](http://sass-lang.com/)
-* Dynamic CSS Loading
+* iframes
+
 
 <aside class="notes">
+    Create link, set href and add <br>
     Scope styles inside your own namespace<br>
     LESS/SASS Nesting <br>
     Explicitly style your elements to override other styles. Can't reset (yet)<br>
@@ -343,7 +362,8 @@ Very hard to change later
 
 <aside class="notes">
 The optional requirement is for brands.<br>
-Facebook widgets branded. You can't fake the like-link.
+Facebook widgets branded. You can't fake the like-link. <br>
+Make rules that are more specific than others <br>
 </aside>
 </script></section>
 
@@ -352,7 +372,7 @@ Facebook widgets branded. You can't fake the like-link.
 ## Source-less iframes
 <ul>
     <li class="fragment">Sandbox for styles</li>
-    <li class="fragment">Not for security</li>
+    <li class="fragment">Allow communication</li>
 </ul>
 
 <aside class="notes">
@@ -408,7 +428,9 @@ Might be a better choice, unless you have to talk a lot to the page<br>
 ![Assessment Engine](img/aEngine.png)
 
 <aside class="notes">
-Widget for creating multiple-choice tests. Dynamic, interactive, many styles, inherit styles, Styling was hard.<br>
+Widget for creating multiple-choice tests. <br>
+Rendered directly into the dom <br>
+Dynamic, interactive, many styles, inherit styles, Styling was hard.<br>
 This would probably be better as source less iframe, passing in some styles.
 </aside>
 </script></section>
@@ -425,27 +447,34 @@ This would probably be better as source less iframe, passing in some styles.
 </script></section>
 
 <section data-markdown><script type="text/template">
-## Some points
+## Things to consider
 
-* iframes are the easiest
+* iframes are not so bad
 * Rendering outside the frame?
 * Performance
-* Look and feel
+* Inheriting styles
 * Security
 
 <aside class="notes">
+    iframes have a bad reputation <br>
+    together with XmlHttpRequest, good things from Internet Explorer <br>
     Rendering outside the frame, tooltips? Can be solved by rendering to the page..<br>
     Iframes, especially multiple, can be slow compared to elements.<br>
     Inheriting styles in iframes is possible, but harder.<br>
-    Normal iframes are more secure due to SOP.
+    Normal iframes are more secure due to SOP. Facebook widget.
 </aside>
 </script></section>
 
+<section></section>
 
 <section data-markdown><script type="text/template">
-# Security Constraints
+# Data and Security
 <aside class="notes">
-Cookies for auth, has to prevent.
+Be aware of the Security Boundaries in the browser. <br>
+Nature of third party scripts is that they're on different domain <br>
+Most likely a different domain, if you need data that is. <br>
+Loading scripts and images are easy, data is not. <br>
+Use whatever you've got, jQuery, Angulars $http. <br>
 </aside>
 </script></section>
 
@@ -466,6 +495,7 @@ Browser mechanism to prevent XmlHttpRequests to different sites using the user's
 <p class="fragment">Note that <code>&lt;script&gt;</code> tags are exempt.</p>
 
 <aside class="notes">
+Other sites doing get on facebook, getting your friends. <br>
 You can still load scripts, like we do from CDNs all the time.
 </aside>
 </script></section>
@@ -475,7 +505,7 @@ You can still load scripts, like we do from CDNs all the time.
 <aside class="notes">
 For allowing requests across different origins (protocols, hosts, ports).
 Preflight OPTIONS request, Methods and headers.
-Variying implementations, feels hackish.
+Variying implementations.
 </aside>
 </script></section>
 
@@ -483,7 +513,7 @@ Variying implementations, feels hackish.
 ![CORS Compatibility](img/cors.png)
 <small>http://caniuse.com/cors</small>
 <aside class="notes">
-Note the limitations in IE. GET/POST only, No custom headers: Auth hard.
+Note the limitations in IE. GET/POST only, No custom headers, no cookies.
 </aside>
 </script></section>
 
@@ -511,7 +541,6 @@ Just works everywhere.
 
 <section data-markdown><script type="text/template">
 ## JSONP quick introduction
-
 <pre>&lt;script src="data.js?callback=displayUserData"&gt;&lt;/script&gt;</pre>
 <br>
 data.js:
@@ -522,6 +551,20 @@ displayUserData({"authenticated": true, "username": "Tosh"});
 Adds a script tag dynamically, invokes function on return.<br>
 Notice the callback is specified as parameter, and wraps the script.<br>
 jQuery autogenerates callbacks.
+</aside>
+</script></section>
+
+<section data-markdown><script type="text/template">
+## Sending data through <code>&lt;img&gt;</code>
+
+```javascript
+var image = new Image();
+image.src = endpointUrl + '?data=" + data;
+```
+
+<aside class="notes">
+    For send only, google analytics uses images. <br>
+    Fire and forget, good for logging and collecting data, like users.
 </aside>
 </script></section>
 
@@ -555,13 +598,29 @@ JSONP is very easy to get working, beware of passing user data as anyone can inc
 </aside>
 </script></section>
 
+<section></section>
+
 <section data-markdown><script type="text/template">
 # Providing an API
 
-Same as mentioned earlier, only without the hassle of DOM.
 <aside class="notes">
-    Not much to say here. Expose one global and work with that.
+Same as mentioned, only that you don't need to fight with the DOM. <br>
+Still gotta be aware of scripts <br>
+Providing an API, or more common an API Wrapper. <br>
+Have one global and expose a bunch of methods.  <br>
+Be stable. <br>
+Not much to say here. Expose one global and work with that.
 </aside>
+</script></section>
+
+<section></section>
+<section data-markdown><script type="text/template">
+# Summary
+
+* Perfect your loader
+* Be careful with the DOM
+* Good luck with the SOP
+
 </script></section>
 
 <section data-markdown><script type="text/template">
